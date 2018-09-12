@@ -38,7 +38,7 @@ public class RipeMDEncryptDemo {
     /**
      * RipeMD128Hex消息摘要
      * @param data 待做消息摘要处理的数据
-     * @return byte[] 消息摘要
+     * @return String 消息摘要
      * @throws NoSuchAlgorithmException
      */
     private static String encodeRipeMD128Hex(byte[] data) throws NoSuchAlgorithmException {
