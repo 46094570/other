@@ -26,14 +26,20 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class UserInfo {
     private static Logger log = Logger.getLogger(UserInfo.class);
     private static ReadConfig config = new ReadConfig();
-    private int startIndex=0;
+    private Sheet sheet;
+    private int startIndex;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Date now = new Date();
     private DecimalFormat df = new DecimalFormat("0");
@@ -43,36 +49,58 @@ public class UserInfo {
     public static void main(String[] args) throws Exception {
 
         UserInfo rui = new UserInfo();
-        rui.insertExcel();
+//        rui.insertExcel();
 
-//        String[] title = rui.getTitle();
-//        Sheet sheet = rui.readExcel();
-//        rui.showContent(sheet,title);
+        String[] title = rui.getTitle();
+        rui.showContent(rui.getTitle());
 
     }
 
-    public String[] getTitle(){
-        String firstLine = config.getConfig().getProperty("firstLine");
-        if (null == firstLine) {
-            throw new RuntimeException("请定义好firstLine的内容");
+    public String[] getTitle() throws IOException {
+        String[] title = {};
+        String headLine = config.getConfig().getProperty("headLine");
+        String skipFirstLine = config.getConfig().getProperty("isSkipFirstLine");
+        sheet = readExcel();//加载文件内容
+        Row sheetHeadLine = sheet.getRow(0);
+        int headLineNum = sheetHeadLine.getPhysicalNumberOfCells();//从前向后数
+        int headLineLastNum = sheetHeadLine.getLastCellNum();//从后向前数
+        //headLineNum==headLineLastNum，表示行记录无null格
+        if (null == headLine) {//未添加配置文件，以文件内容为准
+            if (headLineLastNum != headLineNum) {
+                throw new RuntimeException("请检查配置文件标题栏的内容或excel中标题栏内容，标题栏禁用空字段");
+            } else {//每行记录无null格，配置文件未配置标题信息
+                //配置文件中未配置标题行信息，以文件内标题行为准，文件内标题行可能会存在首行为标题或数据，允许跳过首行内容
+                if ("1".equals(skipFirstLine)) {
+                    startIndex = 1;
+                } else if ("0".equals(skipFirstLine)) {
+                    startIndex = 0;
+                }
+                List<String> list = new ArrayList<String>();
+                for (int i = 0; i < headLineLastNum; i++) {
+                    list.add(sheetHeadLine.getCell(i).toString());
+                }
+                title = Arrays.toString(list.toArray()).replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+            }
+        } else {//添加配置文件，以配置文件为准
+                 /*
+                    用于判断是否跳过记录中的首行，一般首行是标题，可不读数据
+                    配置文件中配置有内容，且文件中首行不相等
+                */
+                if ("1".equals(skipFirstLine)) {
+                    startIndex = 1;
+                } else if ("0".equals(skipFirstLine)) {
+                    startIndex = 0;
+                }
+                title = headLine.split(",");
         }
-        String[] title = firstLine.split(",");
         return title;
     }
 
-    public Sheet readExcel() throws IOException {
-        Sheet sheet = null;
+    private Sheet readExcel() throws IOException {
 
-        /*
-            用于判断是否跳过记录中的首行，一般首行是标题，可不读数据
-         */
-        String skipFirstLine = config.getConfig().getProperty("isSkipFirstLine");
-        if ("1".equals(skipFirstLine)) {
-            startIndex = 1;
-        }
         String filepath = config.getConfig().getProperty("filePath");
         Workbook wb = null;
-        InputStream is = null;
+        InputStream is;
         is = new FileInputStream(filepath);
         String ext = filepath.substring(filepath.lastIndexOf("."));
         if (".xls".equals(ext)) {
@@ -84,23 +112,18 @@ public class UserInfo {
         return sheet;
     }
 
-    public void showContent(Sheet sheet,String[] title) {
-        if (title.length != sheet.getRow(0).getPhysicalNumberOfCells()) {
-            throw new RuntimeException("标题与列无法对应，请检查标题内容");
-        }
-
-        for (int i = startIndex; i <= sheet.getPhysicalNumberOfRows(); i++) {
+    public void showContent(String[] title) {
+        for (int i = startIndex; i <= sheet.getLastRowNum(); i++) {
             String userId = UserIdUtils.generateShortUuid();
             Row row = sheet.getRow(i);
             Cell cell;
             if (null != row) {
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                for (int j = 0; j < title.length; j++) {
                     cell = row.getCell(j);
                     if (null != cell) {
-                        System.out.print(title[j] + ":" + cell.toString() + ",");
-                        System.out.print(title[j] + ":" + cell.getCellTypeEnum() + ",");
+                        System.out.print(title[j] + ":" +cell.toString() + ","+cell.getCellTypeEnum() + ",");
                     } else {
-                        System.out.print(title[j] + ":  ,");
+                        System.out.print(title[j] + ":" + cell + ",");
                     }
                 }
                 System.out.println();
@@ -138,11 +161,11 @@ public class UserInfo {
                 latch = new CountDownLatch(5);
                 if (null != row) {
                     //处理TUser需要的信息
-                    tUser = parseTUser(userId,row, tUser);
-                    tUserAccount = parseTUserAccout(userId,row, tUserAccount);
-                    tUserBasis = parseTUserBasic(userId,row, tUserBasis);
-                    tUserSurvey = parseTUserSurvey(userId,row, tUserSurvey);
-                    tUserExt = parseTUserExt(userId,row, tUserExt);
+                    tUser = parseTUser(userId, row, tUser);
+                    tUserAccount = parseTUserAccout(userId, row, tUserAccount);
+                    tUserBasis = parseTUserBasic(userId, row, tUserBasis);
+                    tUserSurvey = parseTUserSurvey(userId, row, tUserSurvey);
+                    tUserExt = parseTUserExt(userId, row, tUserExt);
 //                    System.out.println(tuser.toString());
                     //将TUser数据封装进执行语句中
                     PrepareStatementHandler tUserHandler = insertTUser(tUserStatement, tUser);
@@ -161,7 +184,7 @@ public class UserInfo {
                     executorService.execute(tUserSurveyHandler);
                     executorService.execute(tUserExtHandler);
                     count++;
-                    log.info("处理完一条记录，该记录是第 " +count+ " 条记录");
+                    log.info("处理完一条记录，该记录是第 " + count + " 条记录");
 
                 }
             }
@@ -181,15 +204,15 @@ public class UserInfo {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("获取数据库连接失败");
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
             throw new RuntimeException("Excel封装SQL失败");
-        }finally {
+        } finally {
             executorService.shutdown();
         }
     }
 
-    private TUser parseTUser(String userId,Row row, TUser tuser) throws ParseException {
+    private TUser parseTUser(String userId, Row row, TUser tuser) throws ParseException {
         /**
          关于Excel获取Cell是否为空的问题，需要用三目表达式做一个判断，懒得用if了
 
@@ -226,13 +249,13 @@ public class UserInfo {
         return tuser;
     }
 
-    private TUserAccount parseTUserAccout(String userId,Row row, TUserAccount tUserAccount) {
+    private TUserAccount parseTUserAccout(String userId, Row row, TUserAccount tUserAccount) {
         tUserAccount.clean();
         tUserAccount.setUserId(userId);
         return tUserAccount;
     }
 
-    private TUserBasis parseTUserBasic(String userId,Row row, TUserBasis tUserBasis) {
+    private TUserBasis parseTUserBasic(String userId, Row row, TUserBasis tUserBasis) {
         tUserBasis.clean();
         tUserBasis.setUserId(userId);
         tUserBasis.setIsIdCardCheckThrough("1");
@@ -248,13 +271,13 @@ public class UserInfo {
         return tUserBasis;
     }
 
-    private TUserSurvey parseTUserSurvey(String userId,Row row, TUserSurvey tUserSurvey) {
+    private TUserSurvey parseTUserSurvey(String userId, Row row, TUserSurvey tUserSurvey) {
         tUserSurvey.clean();
         tUserSurvey.setUserId(userId);
         return tUserSurvey;
     }
 
-    private TUserExt parseTUserExt(String userId,Row row, TUserExt tUserExtser) {
+    private TUserExt parseTUserExt(String userId, Row row, TUserExt tUserExtser) {
         tUserExtser.clean();
         tUserExtser.setUserId(userId);
         tUserExtser.setQianpenId(row.getCell(11) == null ? "" : df.format(row.getCell(11).getNumericCellValue()));
@@ -286,45 +309,45 @@ public class UserInfo {
         statement.setObject(19, tuser.getFirstLoginTime());
         statement.setObject(20, tuser.getIp());
         latch.countDown();
-        return new PrepareStatementHandler(statement,"TUser");
+        return new PrepareStatementHandler(statement, "TUser");
     }
 
     public PrepareStatementHandler insertTUserAccount(PreparedStatement statement, TUserAccount tUserAccount) throws SQLException {
-        statement.setObject(1,tUserAccount.getUserId());
+        statement.setObject(1, tUserAccount.getUserId());
         latch.countDown();
-        return new PrepareStatementHandler(statement,"TUserAccount");
+        return new PrepareStatementHandler(statement, "TUserAccount");
     }
 
     public PrepareStatementHandler insertTUserBasis(PreparedStatement statement, TUserBasis tUserBasis) throws SQLException {
-        statement.setObject(1,tUserBasis.getUserId());
-        statement.setObject(2,tUserBasis.getIsIdCardCheckThrough());
-        statement.setObject(3,tUserBasis.getFaceRecogniteResult());
-        statement.setObject(4,tUserBasis.getIsContactInfo());
-        statement.setObject(5,tUserBasis.getIsBasicInfo());
-        statement.setObject(6,tUserBasis.getIsBankCardBind());
-        statement.setObject(7,tUserBasis.getIsUserAttach());
-        statement.setObject(8,tUserBasis.getIsAllCheckThrough());
-        statement.setObject(9,tUserBasis.getIsFirstAuth());
-        statement.setObject(10,tUserBasis.getIsSesameAuth());
-        statement.setObject(11,tUserBasis.getCreateTime());
+        statement.setObject(1, tUserBasis.getUserId());
+        statement.setObject(2, tUserBasis.getIsIdCardCheckThrough());
+        statement.setObject(3, tUserBasis.getFaceRecogniteResult());
+        statement.setObject(4, tUserBasis.getIsContactInfo());
+        statement.setObject(5, tUserBasis.getIsBasicInfo());
+        statement.setObject(6, tUserBasis.getIsBankCardBind());
+        statement.setObject(7, tUserBasis.getIsUserAttach());
+        statement.setObject(8, tUserBasis.getIsAllCheckThrough());
+        statement.setObject(9, tUserBasis.getIsFirstAuth());
+        statement.setObject(10, tUserBasis.getIsSesameAuth());
+        statement.setObject(11, tUserBasis.getCreateTime());
         latch.countDown();
-        return new PrepareStatementHandler(statement,"TUserBasis");
+        return new PrepareStatementHandler(statement, "TUserBasis");
     }
 
     public PrepareStatementHandler insertTUserExt(PreparedStatement statement, TUserExt tUserExt) throws SQLException {
-        statement.setObject(1,tUserExt.getUserId());
-        statement.setObject(2,tUserExt.getQianpenId());
-        statement.setObject(3,tUserExt.getQianpenAccountName());
-        statement.setObject(4,tUserExt.getBankCardName());
-        statement.setObject(5,tUserExt.getBankCard());
+        statement.setObject(1, tUserExt.getUserId());
+        statement.setObject(2, tUserExt.getQianpenId());
+        statement.setObject(3, tUserExt.getQianpenAccountName());
+        statement.setObject(4, tUserExt.getBankCardName());
+        statement.setObject(5, tUserExt.getBankCard());
         latch.countDown();
-        return new PrepareStatementHandler(statement,"TUserExt");
+        return new PrepareStatementHandler(statement, "TUserExt");
     }
 
     public PrepareStatementHandler insertTUserSurvey(PreparedStatement statement, TUserSurvey tUserSurvey) throws SQLException {
-        statement.setObject(1,tUserSurvey.getUserId());
+        statement.setObject(1, tUserSurvey.getUserId());
         latch.countDown();
-        return new PrepareStatementHandler(statement,"TUserSurvey");
+        return new PrepareStatementHandler(statement, "TUserSurvey");
     }
 
 }
