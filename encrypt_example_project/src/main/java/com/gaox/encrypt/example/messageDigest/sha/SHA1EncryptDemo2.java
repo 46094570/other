@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.sha;
+package com.gaox.encrypt.example.messageDigest.sha;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

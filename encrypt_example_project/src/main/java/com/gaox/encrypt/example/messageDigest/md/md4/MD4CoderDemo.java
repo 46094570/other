@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.md.md4;
+package com.gaox.encrypt.example.messageDigest.md.md4;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;

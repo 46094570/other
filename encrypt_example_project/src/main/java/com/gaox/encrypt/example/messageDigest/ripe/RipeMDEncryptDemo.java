@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.ripe;
+package com.gaox.encrypt.example.messageDigest.ripe;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;

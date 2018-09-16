@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.md.md5;
+package com.gaox.encrypt.example.messageDigest.md.md5;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.urlbase64.commons;
+package com.gaox.encrypt.example.messageDigest.urlbase64.commons;
 
 
 import org.apache.commons.codec.binary.Base64;

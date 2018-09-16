@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.mac;
+package com.gaox.encrypt.example.messageDigest.mac;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;

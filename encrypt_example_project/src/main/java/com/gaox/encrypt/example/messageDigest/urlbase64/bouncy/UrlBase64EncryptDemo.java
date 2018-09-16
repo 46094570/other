@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.urlbase64.bouncy;
+package com.gaox.encrypt.example.messageDigest.urlbase64.bouncy;
 
 import org.bouncycastle.util.encoders.UrlBase64;
 

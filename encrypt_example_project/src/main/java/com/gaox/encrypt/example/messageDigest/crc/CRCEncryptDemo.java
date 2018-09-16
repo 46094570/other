@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.crc;
+package com.gaox.encrypt.example.messageDigest.crc;
 
 import java.util.zip.CRC32;
 

@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.sha;
+package com.gaox.encrypt.example.messageDigest.sha;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;

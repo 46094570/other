@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.mac;
+package com.gaox.encrypt.example.messageDigest.mac;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
