@@ -30,7 +30,7 @@ public class AESEncoderDemo {
      * @return byte[] 二进制密钥
      * @throws Exception
      */
-    private static byte[] iniKey() throws Exception {
+    private static byte[] initKey() throws Exception {
         /**
          * 实例化
          * 使用128位或者192位长度密钥，替换如下代码实现：
@@ -55,10 +55,9 @@ public class AESEncoderDemo {
      * 转换密钥
      * @param key 二进制密钥
      * @return Key 密钥
-     * @throws Exception
      */
     private static Key toKey(byte[] key) throws Exception {
-        SecretKeySpec keySpec = new SecretKeySpec(key, KEY_ALGORITHM);
+        SecretKey keySpec = new SecretKeySpec(key, KEY_ALGORITHM);
         return keySpec;
     }
 
@@ -104,7 +103,7 @@ public class AESEncoderDemo {
         String s = "This is AES test demo";
         byte[] inputData = s.getBytes();
         System.err.println("原文：\t"+s);
-        byte[] key = iniKey();
+        byte[] key = initKey();
         System.err.println("密钥：\t" + Base64.encodeBase64String(key));
         inputData = encrypt(inputData, key);
         System.err.println("加密后：\t" + Base64.encodeBase64String(inputData));
