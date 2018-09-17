@@ -23,7 +23,7 @@ public class HttpUtils {
      * @param data 待打印数据
      * @throws IOException
      */
-    private static void responseWrite(HttpServletResponse response,byte[] data) throws IOException {
+    public static void responseWrite(HttpServletResponse response,byte[] data) throws IOException {
         if(null!=data){
             response.setContentLength(data.length);
             DataOutputStream outputStream = new DataOutputStream(response.getOutputStream());
@@ -41,7 +41,7 @@ public class HttpUtils {
      * @return byte[] 请求中的数据
      * @throws IOException
      */
-    private static byte[] requestRead(HttpServletRequest request) throws IOException {
+    public static byte[] requestRead(HttpServletRequest request) throws IOException {
         int contentLength = request.getContentLength();
         byte[] data = null;
         if(contentLength>0){
@@ -60,7 +60,7 @@ public class HttpUtils {
      * @param requestData 请求数据
      * @return byte[] 数据包
      */
-    private static byte[] postRequest(String url,byte[] requestData){
+    public static byte[] postRequest(String url,byte[] requestData){
         Properties requestProperties = new Properties();
         requestProperties.setProperty(CONTENT_TYPE,"application/octet-stream;charset="+CHARACTER_ENCODING);
         return postRequest(url,requestData,requestProperties);
@@ -73,7 +73,7 @@ public class HttpUtils {
      * @param requestProperties 请求包体
      * @return byte[] 数据包
      */
-    private static byte[] postRequest(String url, byte[] requestData, Properties requestProperties) {
+    public static byte[] postRequest(String url, byte[] requestData, Properties requestProperties) {
         byte[] responseData = null;
         HttpURLConnection conn = null;
         try {

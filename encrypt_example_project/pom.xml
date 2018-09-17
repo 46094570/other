@@ -7,6 +7,7 @@
     <groupId>com.gaoxiang</groupId>
     <artifactId>encrypt_example_project</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
     <dependencies>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -44,7 +45,9 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
+            <scope>provided</scope>
         </dependency>
+
 
 
     </dependencies>
@@ -58,6 +61,24 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/</path>
+                    <port>8080</port>
+                    <server>tomcat7</server>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
