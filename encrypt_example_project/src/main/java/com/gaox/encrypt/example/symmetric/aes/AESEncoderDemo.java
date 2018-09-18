@@ -1,12 +1,10 @@
-package com.gaox.encrypt.example.symmetricEncryption.aes;
+package com.gaox.encrypt.example.symmetric.aes;
 
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 

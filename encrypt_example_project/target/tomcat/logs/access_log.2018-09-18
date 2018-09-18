@@ -1,0 +1,4 @@
+127.0.0.1 - - [18/Sep/2018:10:04:46 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-1 312
+127.0.0.1 - - [18/Sep/2018:10:07:51 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-1 266
+127.0.0.1 - - [18/Sep/2018:10:08:32 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-3 0
+127.0.0.1 - - [18/Sep/2018:10:19:23 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-1 212

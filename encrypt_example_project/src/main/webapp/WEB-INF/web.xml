@@ -6,7 +6,7 @@
     <display-name>DataServlet</display-name>
     <servlet>
         <servlet-name>DataServlet</servlet-name>
-        <servlet-class>com.gaox.encrypt.example.utils.DataServlet</servlet-class>
+        <servlet-class>com.gaox.encrypt.example.symmetric.http.DataServlet</servlet-class>
         <init-param>
             <param-name>key</param-name>
             <param-value><![CDATA[MgOFgiheLOMyhD4NF/m0AIfPEn2yQRWyarr3rGxZlAA=]]></param-value>

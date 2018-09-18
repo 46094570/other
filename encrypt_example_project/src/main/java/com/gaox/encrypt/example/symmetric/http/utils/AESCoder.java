@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.utils;
+package com.gaox.encrypt.example.symmetric.http.utils;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

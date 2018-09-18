@@ -1,4 +1,7 @@
-package com.gaox.encrypt.example.utils;
+package com.gaox.encrypt.example.symmetric.http;
+
+import com.gaox.encrypt.example.symmetric.http.utils.AESCoder;
+import com.gaox.encrypt.example.symmetric.http.utils.HttpUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,9 +33,11 @@ public class DataServlet extends HttpServlet {
         try {
             //从请求头中获取摘要信息
             String messageDigest = req.getHeader(HEAD_MD);
+            System.out.println("doPost requestRead messageDigest:\r\n"+messageDigest);
             byte[] input = HttpUtils.requestRead(req);
+            System.out.println("doPost requestRead:\r\n"+new String(input));
             byte[] data = AESCoder.decrypt(input, key);
-            System.out.println(new String(data));
+            System.out.println("doPost decrypt:\r\n"+new String(data));
             byte[] output = "".getBytes();
             if (AESCoder.validate(data, messageDigest)) {
                 output = "OK".getBytes();

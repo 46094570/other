@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.utils;
+package com.gaox.encrypt.example.symmetric.http.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,6 +78,8 @@ public class HttpUtils {
         HttpURLConnection conn = null;
         try {
             URL u = new URL(url);
+            System.out.println("URL:\r\n"+u);
+            //一个连接中会有输入输出流，信息分别存在流中，只要获取连接就能获取流信息
             conn = (HttpURLConnection) u.openConnection();
             if(null!=requestProperties&&(requestProperties.size()>0)){
                 for (Map.Entry<Object,Object> entry:requestProperties.entrySet()
@@ -99,8 +101,8 @@ public class HttpUtils {
             DataInputStream inputStream = new DataInputStream(conn.getInputStream());
             int contentLength = conn.getContentLength();
             if(contentLength>0){
-                requestData = new byte[contentLength];
-                inputStream.readFully(requestData);
+                responseData = new byte[contentLength];
+                inputStream.readFully(responseData);
             }
             inputStream.close();
         }catch (Exception e){
@@ -110,6 +112,6 @@ public class HttpUtils {
                 conn.disconnect();
             }
         }
-        return requestData;
+        return responseData;
     }
 }

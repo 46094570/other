@@ -1,4 +1,4 @@
-package com.gaox.encrypt.example.symmetricEncryption.des;
+package com.gaox.encrypt.example.symmetric.des;
 
 import org.apache.commons.codec.binary.Base64;
 

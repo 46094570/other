@@ -1,9 +1,7 @@
-package com.gaox.encrypt.example.symmetricEncryption.idea;
+package com.gaox.encrypt.example.symmetric.idea;
 
-import org.apache.commons.codec.BinaryDecoder;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.BigIntegers;
 import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
