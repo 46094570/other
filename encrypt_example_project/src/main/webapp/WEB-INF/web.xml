@@ -6,10 +6,12 @@
     <display-name>DataServlet</display-name>
     <servlet>
         <servlet-name>DataServlet</servlet-name>
-        <servlet-class>com.gaox.encrypt.example.symmetric.http.DataServlet</servlet-class>
+        <!--<servlet-class>com.gaox.encrypt.example.symmetric.http.DataServlet</servlet-class>-->
+        <servlet-class>com.gaox.encrypt.example.asymmetric.http.DataServlet</servlet-class>
         <init-param>
             <param-name>key</param-name>
-            <param-value><![CDATA[MgOFgiheLOMyhD4NF/m0AIfPEn2yQRWyarr3rGxZlAA=]]></param-value>
+            <!--<param-value><![CDATA[MgOFgiheLOMyhD4NF/m0AIfPEn2yQRWyarr3rGxZlAA=]]></param-value>-->
+            <param-value><![CDATA[30820154020100300d06092a864886f70d01010105000482013e3082013a020100024100921214137517b0665ca414ac252c594175ca7e11ecae7902327b468a998ffe6ff3b8f42bc5a599ab1945bd70095ed08f494ae732658aa39075f92ba3d44135a5020301000102403bd2eda7fe67e2563a10f56a7f9b073f3917e2c442943e7938e5a641739d36ce52af2f318c5a31b61b3c4cd55cf2aaf101b34588003a8c90fdefd3843da12b01022100c4863ff1b2981463b99581ac4917b94992be8a88664a0cdc25d6c414a44d33e5022100be46ea5b05941d840ff5972fabf171a295a6794d91ed3186192bb09b87135ec10220488a8189f6f179fd41a0b527e22716a6d8baeaa9e4900ae52c367554653d761d02203221d70f424a02f8cf87a25cc20dac25ed0dde79ec8fb4f3a2e01af8ef3ed04102210090c3bdf110dba8436ef9aabf6e35818f1ab51c0821b91264e53f2be4e36683c9]]></param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

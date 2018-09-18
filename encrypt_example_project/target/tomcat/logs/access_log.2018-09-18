@@ -2,3 +2,13 @@
 127.0.0.1 - - [18/Sep/2018:10:07:51 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-1 266
 127.0.0.1 - - [18/Sep/2018:10:08:32 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-3 0
 127.0.0.1 - - [18/Sep/2018:10:19:23 +0800] "POST /dataserver HTTP/1.1" 200 16 http-bio-8080-exec-1 212
+127.0.0.1 - - [18/Sep/2018:17:54:23 +0800] "POST /dataserver HTTP/1.1" 500 2718 http-bio-8080-exec-1 312
+0:0:0:0:0:0:0:1 - - [18/Sep/2018:17:55:26 +0800] "GET /dataserver HTTP/1.1" 500 2098 http-bio-8080-exec-2 0
+0:0:0:0:0:0:0:1 - - [18/Sep/2018:17:55:26 +0800] "GET /favicon.ico HTTP/1.1" 500 2098 http-bio-8080-exec-3 5
+127.0.0.1 - - [18/Sep/2018:18:00:51 +0800] "POST /dataserver HTTP/1.1" 500 2718 http-bio-8080-exec-4 0
+127.0.0.1 - - [18/Sep/2018:18:06:11 +0800] "POST /dataserver HTTP/1.1" 500 2718 http-bio-8080-exec-1 218
+127.0.0.1 - - [18/Sep/2018:18:07:00 +0800] "POST /dataserver HTTP/1.1" 500 2450 http-bio-8080-exec-1 250
+127.0.0.1 - - [18/Sep/2018:18:08:57 +0800] "POST /dataserver HTTP/1.1" 500 3575 http-bio-8080-exec-1 499
+127.0.0.1 - - [18/Sep/2018:18:13:16 +0800] "POST /dataserver HTTP/1.1" 500 3575 http-bio-8080-exec-1 345
+127.0.0.1 - - [18/Sep/2018:18:14:23 +0800] "POST /dataserver HTTP/1.1" 500 2617 http-bio-8080-exec-1 494
+127.0.0.1 - - [18/Sep/2018:18:16:34 +0800] "POST /dataserver HTTP/1.1" 500 3575 http-bio-8080-exec-1 500
