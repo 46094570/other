@@ -2,10 +2,11 @@ package com.gaox.encrypt.example.asymmetric.http.utils;
 
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
+import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -65,7 +66,30 @@ public class RSACoder {
         PublicKey publicKey = factory.generatePublic(publicKeySpec);
         Cipher cipher = Cipher.getInstance(factory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
-        return cipher.doFinal(data);
+        /**
+         * 以下是RSA分段解密处理方法
+         * 这里做测试用，并未所有方法都添加，实际上应该所有解密方法都添加
+         */
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int dataLenth = data.length;
+        System.out.println("data length:"+dataLenth);
+        int offset = 0;
+        byte[] cache;
+        int i =0;
+        while (dataLenth - offset >0) {
+            if(dataLenth - offset > 64){
+                cache = cipher.doFinal( data, offset, 64);
+            }else {
+                cache = cipher.doFinal(data, offset, dataLenth - offset);
+            }
+            out.write( cache, 0, cache. length);
+            i++;
+            offset = i * 64;
+        }
+        byte[] decryptedDdeata = out.toByteArray();
+        System.out.println("decryptedDdeata length:\t"+decryptedDdeata.length);
+        out.close();
+        return decryptedDdeata;
     }
 
     /**
@@ -83,7 +107,31 @@ public class RSACoder {
         PrivateKey privateKey = factory.generatePrivate(privateKeySpec);
         Cipher cipher = Cipher.getInstance(factory.getAlgorithm());
         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-        return cipher.doFinal(data);
+
+        /**
+         * 以下是RSA分段加密处理方法
+         * 这里做测试用，并未所有方法都添加，实际上应该所有加密方法都添加
+         */
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int dataLenth = data.length;
+        System.out.println("data length:"+dataLenth);
+        int offset = 0;
+        byte[] cache;
+        int i =0;
+        while (dataLenth - offset >0) {
+            if(dataLenth - offset > 53){
+                cache = cipher.doFinal( data, offset, 53);
+            }else {
+                cache = cipher.doFinal(data, offset, dataLenth - offset);
+            }
+            out.write( cache, 0, cache. length);
+            i++;
+            offset = i * 53;
+        }
+        byte[] encryptedData = out.toByteArray();
+        System.out.println("encryptedData length:\t"+encryptedData.length);
+        out.close();
+        return encryptedData;
     }
 
     /**
@@ -204,6 +252,7 @@ public class RSACoder {
      * @throws Exception
      */
     public static String getPrivateKeyString(Map<String, Object> keyMap) throws Exception {
+//        return Base64.encodeBase64String(getPrivateKey(keyMap));
         return Hex.encodeHexString(getPrivateKey(keyMap));
     }
 
@@ -215,17 +264,20 @@ public class RSACoder {
      * @throws Exception
      */
     public static String getPublicKeyString(Map<String, Object> keyMap) throws Exception {
+//        return Base64.encodeBase64String(getPublicKey(keyMap));
         return Hex.encodeHexString(getPublicKey(keyMap));
     }
 
     /**
-     * 获取密钥
+     *  获取密钥
+     * 十六进制方式或者Base64方式获取密钥都是一样的
      *
      * @param key 十六进制密钥
      * @return byte[]  二进制密钥
      * @throws DecoderException
      */
     public static byte[] getKey(String key) throws DecoderException {
+//        return Base64.decodeBase64(key.getBytes());
         return Hex.decodeHex(key.toCharArray());
     }
 

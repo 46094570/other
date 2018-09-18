@@ -4,6 +4,8 @@ package com.gaox.encrypt.example.asymmetric.http;
 
 import com.gaox.encrypt.example.asymmetric.http.utils.HttpUtils;
 import com.gaox.encrypt.example.asymmetric.http.utils.RSACoder;
+import com.gaox.encrypt.example.symmetric.http.utils.AESCoder;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +21,7 @@ public class DataServlet extends HttpServlet {
 
     private static final String KEY_PARAM = "key";
 
-    private static final String HEAD_MD = "messageDigest";
+    private static final String AESkey = "Kys6WVHZYkQlLDUDsGaKmY7m7ytEANVSB0gmG4CaYBE=";
     @Override
     public void init() throws ServletException {
         key = getInitParameter(KEY_PARAM);
@@ -66,9 +68,10 @@ public class DataServlet extends HttpServlet {
             builder.append("\t<dataItem>\r\n");
             builder.append("</dataGroup>\r\n");
             byte[] output = builder.toString().getBytes();
-
+            System.out.println("output:"+ Base64.encodeBase64String(output));
+            System.out.println("output length:"+ output.length);
             //加密回复
-            HttpUtils.responseWrite(resp, RSACoder.encryptByPublicKey(output, key));
+            HttpUtils.responseWrite(resp, RSACoder.encryptByPrivateKey(output, key));
         } catch (Exception e) {
             throw new ServletException(e);
         }
