@@ -1,5 +1,6 @@
 package com.gaox.encrypt.example.asymmetric.http;
 
+import com.gaox.encrypt.example.asymmetric.http.utils.MessageUtils;
 import com.gaox.encrypt.example.asymmetric.http.utils.RSACoder;
 import com.gaox.encrypt.example.asymmetric.http.utils.HttpUtils;
 import org.junit.Test;
@@ -16,11 +17,11 @@ public class DataServletTest {
 
     @Test
     public final void test() throws Exception {
-        String str = "服务端你好，可以看到这条信息吗";
+        String str = MessageUtils.generateMessage();
         byte[] data = str.getBytes();
         byte[] input = HttpUtils.postRequest(URL, RSACoder.encryptByPublicKey(data, PUBLIC_KEY));
-        System.out.println("result:\t" + new String(input));
-        System.out.println("result length:\t" + input.length);
+        System.out.println("Message:\t" + new String(input));
+        System.out.println("Message length:\t" + input.length);
         input = RSACoder.decryptByPublicKey(input, PUBLIC_KEY);
         System.out.println("result decrypt:\t" + new String(input));
 //        assertEquals("OK", new String(input));

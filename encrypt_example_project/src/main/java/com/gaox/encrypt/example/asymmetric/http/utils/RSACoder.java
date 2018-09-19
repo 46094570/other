@@ -25,6 +25,16 @@ public class RSACoder {
     private static final String PUBLIC_KEY = "RSAPublicKey";
     //私钥
     private static final String PRIVATE_KEY = "RSAPrivateKey";
+
+    /**
+     * RSA加密算法加密块大小
+     * RSA根据不同密钥的长度加密块大小也不同
+     * 本案例采用512密钥长度，加密块大小53byte，解密块大小64byte
+     * 超过该长度的消息需要进行分块加密
+     */
+    private static final int MAX_ENCRYPT_BLOCK = 53;
+    private static final int MAX_DECRYPT_BLOCK = 64;
+
     /**
      * RSA密钥长度
      * 默认1024位
@@ -48,7 +58,28 @@ public class RSACoder {
         PrivateKey privateKey = factory.generatePrivate(privateKeySpec);
         Cipher cipher = Cipher.getInstance(factory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        return cipher.doFinal(data);
+
+        //添加分段解密方法
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int dataLenth = data.length;
+        System.out.println("data length:"+dataLenth);
+        int offset = 0;
+        byte[] cache;
+        int i =0;
+        while (dataLenth - offset >0) {
+            if(dataLenth - offset > MAX_DECRYPT_BLOCK){
+                cache = cipher.doFinal( data, offset, MAX_DECRYPT_BLOCK);
+            }else {
+                cache = cipher.doFinal(data, offset, dataLenth - offset);
+            }
+            out.write( cache, 0, cache. length);
+            i++;
+            offset = i * MAX_DECRYPT_BLOCK;
+        }
+        byte[] decryptedDdeata = out.toByteArray();
+        System.out.println("decryptedDdeata length:\t"+decryptedDdeata.length);
+        out.close();
+        return decryptedDdeata;
     }
 
     /**
@@ -77,14 +108,14 @@ public class RSACoder {
         byte[] cache;
         int i =0;
         while (dataLenth - offset >0) {
-            if(dataLenth - offset > 64){
-                cache = cipher.doFinal( data, offset, 64);
+            if(dataLenth - offset > MAX_DECRYPT_BLOCK){
+                cache = cipher.doFinal( data, offset, MAX_DECRYPT_BLOCK);
             }else {
                 cache = cipher.doFinal(data, offset, dataLenth - offset);
             }
             out.write( cache, 0, cache. length);
             i++;
-            offset = i * 64;
+            offset = i * MAX_DECRYPT_BLOCK;
         }
         byte[] decryptedDdeata = out.toByteArray();
         System.out.println("decryptedDdeata length:\t"+decryptedDdeata.length);
@@ -119,14 +150,14 @@ public class RSACoder {
         byte[] cache;
         int i =0;
         while (dataLenth - offset >0) {
-            if(dataLenth - offset > 53){
-                cache = cipher.doFinal( data, offset, 53);
+            if(dataLenth - offset > MAX_ENCRYPT_BLOCK){
+                cache = cipher.doFinal( data, offset, MAX_ENCRYPT_BLOCK);
             }else {
                 cache = cipher.doFinal(data, offset, dataLenth - offset);
             }
             out.write( cache, 0, cache. length);
             i++;
-            offset = i * 53;
+            offset = i * MAX_ENCRYPT_BLOCK;
         }
         byte[] encryptedData = out.toByteArray();
         System.out.println("encryptedData length:\t"+encryptedData.length);
@@ -151,7 +182,28 @@ public class RSACoder {
         PublicKey publicKey = factory.generatePublic(publicKeySpec);
         Cipher cipher = Cipher.getInstance(factory.getAlgorithm());
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        return cipher.doFinal(data);
+
+        //添加分段加密
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int dataLenth = data.length;
+        System.out.println("data length:"+dataLenth);
+        int offset = 0;
+        byte[] cache;
+        int i =0;
+        while (dataLenth - offset >0) {
+            if(dataLenth - offset > MAX_ENCRYPT_BLOCK){
+                cache = cipher.doFinal( data, offset, MAX_ENCRYPT_BLOCK);
+            }else {
+                cache = cipher.doFinal(data, offset, dataLenth - offset);
+            }
+            out.write( cache, 0, cache. length);
+            i++;
+            offset = i * MAX_ENCRYPT_BLOCK;
+        }
+        byte[] encryptedData = out.toByteArray();
+        System.out.println("encryptedData length:\t"+encryptedData.length);
+        out.close();
+        return encryptedData;
     }
 
     /**
