@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * RSA 安全编码组件 jdk 实现
+ * rsa 安全编码组件 jdk 实现
  */
 public class RSACoder {
     //非对称加密密钥算法
-    private static final String KEY_ALGORITHM = "RSA";
+    private static final String KEY_ALGORITHM = "rsa";
     //公钥
     private static final String PUBLIC_KEY = "RSAPublicKey";
     //私钥
