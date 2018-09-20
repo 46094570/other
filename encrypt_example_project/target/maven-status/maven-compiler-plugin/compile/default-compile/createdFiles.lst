@@ -6,6 +6,7 @@ com\gaox\encrypt\example\messageDigest\mac\MACEncryptDemo2.class
 com\gaox\encrypt\example\messageDigest\sha\SHA1EncryptDemo.class
 com\gaox\encrypt\example\base64\sun\Base64EncryptDemo.class
 com\gaox\encrypt\example\messageDigest\crc\CRCEncryptDemo.class
+com\gaox\encrypt\example\digitalSignature\http\utils\AESHttpCoder.class
 com\gaox\encrypt\example\messageDigest\sha\SHA224EncryptDemo.class
 com\gaox\encrypt\example\asymmetric\http\utils\RSACoder.class
 ReadExcel.class

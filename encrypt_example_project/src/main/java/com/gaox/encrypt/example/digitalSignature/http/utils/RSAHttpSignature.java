@@ -77,10 +77,10 @@ public class RSAHttpSignature {
             i++;
             offset = i * MAX_DECRYPT_BLOCK;
         }
-        byte[] decryptedDdeata = out.toByteArray();
-        System.out.println("decryptedDdeata length:\t" + decryptedDdeata.length);
+        byte[] decryptedData = out.toByteArray();
+        System.out.println("decryptedData length:\t" + decryptedData.length);
         out.close();
-        return decryptedDdeata;
+        return decryptedData;
     }
 
     /**
@@ -118,10 +118,10 @@ public class RSAHttpSignature {
             i++;
             offset = i * MAX_DECRYPT_BLOCK;
         }
-        byte[] decryptedDdeata = out.toByteArray();
-        System.out.println("decryptedDdeata length:\t" + decryptedDdeata.length);
+        byte[] decryptedData = out.toByteArray();
+        System.out.println("decryptedData length:\t" + decryptedData.length);
         out.close();
-        return decryptedDdeata;
+        return decryptedData;
     }
 
     /**
