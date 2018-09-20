@@ -9,7 +9,7 @@ public class App {
         String str = "eyJqdGkiOiJiMjI5YmJiMmFkYWE0OGU3YmE2MDAzMmE1MDM2YzQwZCIsImV4cCI6MTUxOTcwMzIwNjAwMCwicm9sZXMiOlsiUk9MRV9BRE1VQ19BRE1JTiJdLCJ1c2VyX2lkIjoxfQ==";
         byte[] bytes = Base64.decodeBase64(str.getBytes());
         String result = new String(bytes,"UTF-8");
-        System.out.println("result:\r\n"+result);
+        System.out.println("result:\r\n\t"+result);
 
         String str2 = "12c6ff20d140b3895db9aacc331467e40512213ca02551009164ab1fd92ca09f";
         System.out.println("str2:\r\n"+str2.length());
