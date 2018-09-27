@@ -14,7 +14,6 @@ public class DBConnectionConfig {
     private static DruidDataSource dataSource;
 
     static {
-        //有没有必要节省空间呢....
         InputStreamReader reader = null;
         try {
             Properties pro = new Properties();

@@ -1,5 +1,4 @@
-import com.hs.datatrans.config.DBConnectionConfig;
-import com.hs.datatrans.config.ReadConfig;
+import com.hs.datatrans.config.BasicConfig;
 import com.hs.datatrans.utils.UserIdUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -12,13 +11,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Properties;
 
 public class TestDemo {
     private static Logger log = Logger.getLogger(TestDemo.class);
-    private static ReadConfig config = new ReadConfig();
+    private static BasicConfig config = BasicConfig.getInstance();
     private int startIndex = 0;
 
     public static void main(String[] args) throws Exception {
@@ -39,11 +35,12 @@ public class TestDemo {
         pro.load(is);
         String s = pro.getProperty("timeBetweenEvictionRunsMillis");
         System.out.println("s:"+s);*/
-        TestDemo demo = new TestDemo();
-        String[] title = config.getConfig().getProperty("headLine").split(",");
-        System.out.println("title:"+ Arrays.toString(title));
-        System.out.println("title[1]:"+ title[1]);
-        System.out.println("title.length:"+ title.length);
+//        TestDemo demo = new TestDemo();
+//        String[] title = config.getConfig().getProperty("headLine").split(",");
+//        System.out.println("title:"+ Arrays.toString(title));
+//        System.out.println("title[1]:"+ title[1]);
+//        System.out.println("title.length:"+ title.length);
+
     }
 
 
