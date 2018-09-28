@@ -18,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -36,9 +37,9 @@ public class ReadUserInfo {
     private String[] title;
     //初始化线程池
 //    private ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private ExecutorService executorService = new ThreadPoolExecutor(1, 40,
-            0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>());
+    private ExecutorService executorService = new ThreadPoolExecutor(2, 10,
+            20L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>());
 
     private DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
 
@@ -46,7 +47,7 @@ public class ReadUserInfo {
 
         ReadUserInfo info = new ReadUserInfo();
 //        info.showContent();
-        info.insertExcel();
+        info.batchInsertExcel();
 
     }
 
@@ -132,48 +133,111 @@ public class ReadUserInfo {
         }
     }
 
-    public void insertExcel() {
+
+    public void batchInsertExcel() {
         DruidPooledConnection connection = null;
         try {
             connection = DBConnectionConfig.getDataSource().getConnection();
+            connection.setAutoCommit(false);
             //执行插入Excel记录的语句都在ExcelDBConnection中
             ExcelDBConnection excelDBConnection = new ExcelDBConnection();
             String tUserSql = excelDBConnection.getTUserSql();
             String tUserAccountSql = excelDBConnection.getTUserAccountSql();
-            String tUserBasisSql = excelDBConnection.getTUserBasisSql();
+            String tUserBasicSql = excelDBConnection.getTUserBasisSql();
             String tUserSurveySql = excelDBConnection.getTUserSurveySql();
             String tUserExtSql = excelDBConnection.getTUserExtSql();
+            PreparedStatement tUserStatement = connection.prepareStatement(tUserSql);
+            PreparedStatement tUserAccountstatement = connection.prepareStatement(tUserAccountSql);
+            PreparedStatement tUserBasicStatement = connection.prepareStatement(tUserBasicSql);
+            PreparedStatement tUserSurveyStatement = connection.prepareStatement(tUserSurveySql);
+            PreparedStatement tUserExtStatement = connection.prepareStatement(tUserExtSql);
+
             int count = 0;
+
+            log.info("开始处理记录");
             for (int i = startIndex; i <= sheet.getPhysicalNumberOfRows(); i++) {
                 String userId = UserIdUtils.generateShortUuid();
                 Row row = sheet.getRow(i);
+
                 if (null != row && null != connection) {
-                    //将TUser数据封装进执行语句中
-                    PrepareStatementHandler tUserHandler = excelDBConnection.insertTUser(connection.prepareStatement(tUserSql),
-                            excelDBConnection.parseTUser(userId, row, new TUser()));
-                    //将TUserAccount数据封装进执行语句中
-                    PrepareStatementHandler tUserAccountHandler = excelDBConnection.insertTUserAccount(connection.prepareStatement(tUserAccountSql),
-                            excelDBConnection.parseTUserAccout(userId, row, new TUserAccount()));
-                    //将TUserBasis数据封装进执行语句中
-                    PrepareStatementHandler tUserBasisHandler = excelDBConnection.insertTUserBasis(connection.prepareStatement(tUserBasisSql),
-                            excelDBConnection.parseTUserBasic(userId, row, new TUserBasis()));
-                    //将TUserSurvey数据封装进执行语句中
-                    PrepareStatementHandler tUserSurveyHandler = excelDBConnection.insertTUserSurvey(connection.prepareStatement(tUserSurveySql),
-                            excelDBConnection.parseTUserSurvey(userId, row, new TUserSurvey()));
-                    //将TUserExt数据封装进执行语句中
-                    PrepareStatementHandler tUserExtHandler = excelDBConnection.insertTUserExt(connection.prepareStatement(tUserExtSql),
-                            excelDBConnection.parseTUserExt(userId, row, new TUserExt()));
-                    excelDBConnection.getInsertExcelLatch().await();
-                    executorService.execute(tUserHandler);
-                    executorService.execute(tUserAccountHandler);
-                    executorService.execute(tUserBasisHandler);
-                    executorService.execute(tUserSurveyHandler);
-                    executorService.execute(tUserExtHandler);
+                    TUser tUser = excelDBConnection.parseTUser(userId, row, new TUser());
+                    TUserAccount tUserAccount = excelDBConnection.parseTUserAccout(userId, row, new TUserAccount());
+                    TUserBasis tUserBasis = excelDBConnection.parseTUserBasic(userId, row, new TUserBasis());
+                    TUserSurvey tUserSurvey = excelDBConnection.parseTUserSurvey(userId, row, new TUserSurvey());
+                    TUserExt tUserExt = excelDBConnection.parseTUserExt(userId, row, new TUserExt());
+
+                    tUserStatement.setObject(1, tUser.getUserId());
+                    tUserStatement.setObject(2, tUser.getUserName());
+                    tUserStatement.setObject(3, tUser.getPassword());
+                    tUserStatement.setObject(4, tUser.getTradePwd());
+                    tUserStatement.setObject(5, tUser.getPhone());
+                    tUserStatement.setObject(6, tUser.getEmail());
+                    tUserStatement.setObject(7, tUser.getSource());
+                    tUserStatement.setObject(8, tUser.getDateRegister());
+                    tUserStatement.setObject(9, tUser.getUserStatus());
+                    tUserStatement.setObject(10, tUser.getDateLogin());
+                    tUserStatement.setObject(11, tUser.getDateLastLogin());
+                    tUserStatement.setObject(12, tUser.getUserType());
+                    tUserStatement.setObject(13, tUser.getFailLoginCount());
+                    tUserStatement.setObject(14, tUser.getPwdErrorCount());
+                    tUserStatement.setObject(15, tUser.getInitPasswordState());
+                    tUserStatement.setObject(16, tUser.getDefaultRechargeWay());
+                    tUserStatement.setObject(17, tUser.getBlackReason());
+                    tUserStatement.setObject(18, tUser.getChannelCore());
+                    tUserStatement.setObject(19, tUser.getFirstLoginTime());
+                    tUserStatement.setObject(20, tUser.getIp());
+                    tUserStatement.addBatch();
+
+                    tUserAccountstatement.setObject(1, tUserAccount.getUserId());
+                    tUserAccountstatement.addBatch();
+
+                    tUserBasicStatement.setObject(1, tUserBasis.getUserId());
+                    tUserBasicStatement.setObject(2, tUserBasis.getIsIdCardCheckThrough());
+                    tUserBasicStatement.setObject(3, tUserBasis.getFaceRecogniteResult());
+                    tUserBasicStatement.setObject(4, tUserBasis.getIsContactInfo());
+                    tUserBasicStatement.setObject(5, tUserBasis.getIsBasicInfo());
+                    tUserBasicStatement.setObject(6, tUserBasis.getIsBankCardBind());
+                    tUserBasicStatement.setObject(7, tUserBasis.getIsUserAttach());
+                    tUserBasicStatement.setObject(8, tUserBasis.getIsAllCheckThrough());
+                    tUserBasicStatement.setObject(9, tUserBasis.getIsFirstAuth());
+                    tUserBasicStatement.setObject(10, tUserBasis.getIsSesameAuth());
+                    tUserBasicStatement.setObject(11, tUserBasis.getCreateTime());
+                    tUserBasicStatement.addBatch();
+
+                    tUserExtStatement.setObject(1, tUserExt.getUserId());
+                    tUserExtStatement.setObject(2, tUserExt.getQianpenId());
+                    tUserExtStatement.setObject(3, tUserExt.getQianpenAccountName());
+                    tUserExtStatement.setObject(4, tUserExt.getBankCardName());
+                    tUserExtStatement.setObject(5, tUserExt.getBankCard());
+                    tUserExtStatement.addBatch();
+
+                    tUserSurveyStatement.setObject(1, tUserSurvey.getUserId());
+                    tUserSurveyStatement.addBatch();
+
+                    if (count>0&&count % 10000 == 0) {
+                        tUserStatement.executeBatch();
+                        tUserAccountstatement.executeBatch();
+                        tUserBasicStatement.executeBatch();
+                        tUserSurveyStatement.executeBatch();
+                        tUserExtStatement.executeBatch();
+                        connection.commit();
+                        log.info("处理完一条记录，该记录是第 " + count + " 条记录");
+                        tUserStatement.clearBatch();
+                        tUserAccountstatement.clearBatch();
+                        tUserBasicStatement.clearBatch();
+                        tUserSurveyStatement.clearBatch();
+                        tUserExtStatement.clearBatch();
+                    }
                     count++;
-                    log.info("处理完一条记录，该记录是第 " + count + " 条记录");
-                    excelDBConnection = new ExcelDBConnection();
                 }
             }
+            tUserStatement.executeBatch();
+            tUserAccountstatement.executeBatch();
+            tUserBasicStatement.executeBatch();
+            tUserSurveyStatement.executeBatch();
+            tUserExtStatement.executeBatch();
+            connection.commit();
+            log.info("记录处理毕");
         } catch (NullPointerException e) {
             e.printStackTrace();
             throw new RuntimeException("读取Excel内容错误，请确认文件是否正常");
@@ -183,7 +247,7 @@ public class ReadUserInfo {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("获取数据库连接失败");
-        } catch (InterruptedException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             throw new RuntimeException("Excel封装SQL失败");
         } finally {
@@ -206,6 +270,7 @@ public class ReadUserInfo {
             }
         }
     }
+
 
     /**
      * 读取 Excel 中的 qianpenId 信息
