@@ -2,7 +2,6 @@ package com.hs.datatrans.database;
 
 import com.hs.datatrans.config.DxiangInfoBasicConfig;
 import com.hs.datatrans.entity.excel.*;
-import com.hs.datatrans.excel.PrepareStatementHandler;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.UnixCrypt;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -15,7 +14,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * 封装处理Excel插入数据库相关内容
@@ -29,13 +27,11 @@ public class ExcelDBConnection {
     private String tUserSurveySql;
     private String tUserExtSql;
 
-    private CountDownLatch insertExcelLatch;
     private Date now;
     private SimpleDateFormat sdf;
     private DecimalFormat df;
 
     public ExcelDBConnection() {
-        insertExcelLatch = new CountDownLatch(5);
         now = new Date();
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df = new DecimalFormat("0");
@@ -49,7 +45,6 @@ public class ExcelDBConnection {
          关于Excel时间的转换，要先从Cell从getNumericCellValue()，然后通过HSSFDateUtil.getJavaDate()
          转换成Date类型，再继续进一步处理 ……
          */
-//        tuser.clean();
         tuser.setBlackReason(null);
         tuser.setChannelCore("0");
         tuser.setDateLastLogin(row.getCell(9) == null ? null :
@@ -80,13 +75,11 @@ public class ExcelDBConnection {
     }
 
     public TUserAccount parseTUserAccout(String userId, Row row, TUserAccount tUserAccount) {
-//        tUserAccount.clean();
         tUserAccount.setUserId(userId);
         return tUserAccount;
     }
 
     public TUserBasis parseTUserBasic(String userId, Row row, TUserBasis tUserBasis) {
-//        tUserBasis.clean();
         tUserBasis.setUserId(userId);
         tUserBasis.setIsIdCardCheckThrough("1");
         tUserBasis.setFaceRecogniteResult("0");//0未识别、1：识别成功、2：识别失败
@@ -97,18 +90,16 @@ public class ExcelDBConnection {
         tUserBasis.setIsAllCheckThrough("1");
         tUserBasis.setIsFirstAuth("1");
         tUserBasis.setIsSesameAuth("1");
-        tUserBasis.setCreateTime(sdf.format(now));
+        tUserBasis.setCreateTime(now);
         return tUserBasis;
     }
 
     public TUserSurvey parseTUserSurvey(String userId, Row row, TUserSurvey tUserSurvey) {
-//        tUserSurvey.clean();
         tUserSurvey.setUserId(userId);
         return tUserSurvey;
     }
 
     public TUserExt parseTUserExt(String userId, Row row, TUserExt tUserExtser) {
-//        tUserExtser.clean();
         tUserExtser.setUserId(userId);
         tUserExtser.setQianpenId(row.getCell(11) == null ? "" : df.format(row.getCell(11).getNumericCellValue()));
         tUserExtser.setQianpenAccountName(row.getCell(12) == null ? "" : row.getCell(12).toString());
@@ -117,7 +108,7 @@ public class ExcelDBConnection {
         return tUserExtser;
     }
 
-    public PrepareStatementHandler insertTUser(PreparedStatement statement, TUser tuser) throws SQLException {
+    public void insertTUser(PreparedStatement statement, TUser tuser) throws SQLException {
         statement.setObject(1, tuser.getUserId());
         statement.setObject(2, tuser.getUserName());
         statement.setObject(3, tuser.getPassword());
@@ -138,17 +129,15 @@ public class ExcelDBConnection {
         statement.setObject(18, tuser.getChannelCore());
         statement.setObject(19, tuser.getFirstLoginTime());
         statement.setObject(20, tuser.getIp());
-        insertExcelLatch.countDown();
-        return new PrepareStatementHandler(statement, "TUser");
+        statement.addBatch();
     }
 
-    public PrepareStatementHandler insertTUserAccount(PreparedStatement statement, TUserAccount tUserAccount) throws SQLException {
+    public void insertTUserAccount(PreparedStatement statement, TUserAccount tUserAccount) throws SQLException {
         statement.setObject(1, tUserAccount.getUserId());
-        insertExcelLatch.countDown();
-        return new PrepareStatementHandler(statement, "TUserAccount");
+        statement.addBatch();
     }
 
-    public PrepareStatementHandler insertTUserBasis(PreparedStatement statement, TUserBasis tUserBasis) throws SQLException {
+    public void insertTUserBasic(PreparedStatement statement, TUserBasis tUserBasis) throws SQLException {
         statement.setObject(1, tUserBasis.getUserId());
         statement.setObject(2, tUserBasis.getIsIdCardCheckThrough());
         statement.setObject(3, tUserBasis.getFaceRecogniteResult());
@@ -160,29 +149,23 @@ public class ExcelDBConnection {
         statement.setObject(9, tUserBasis.getIsFirstAuth());
         statement.setObject(10, tUserBasis.getIsSesameAuth());
         statement.setObject(11, tUserBasis.getCreateTime());
-        insertExcelLatch.countDown();
-        return new PrepareStatementHandler(statement, "TUserBasis");
+        statement.addBatch();
     }
 
-    public PrepareStatementHandler insertTUserExt(PreparedStatement statement, TUserExt tUserExt) throws SQLException {
+    public void insertTUserExt(PreparedStatement statement, TUserExt tUserExt) throws SQLException {
         statement.setObject(1, tUserExt.getUserId());
         statement.setObject(2, tUserExt.getQianpenId());
         statement.setObject(3, tUserExt.getQianpenAccountName());
         statement.setObject(4, tUserExt.getBankCardName());
         statement.setObject(5, tUserExt.getBankCard());
-        insertExcelLatch.countDown();
-        return new PrepareStatementHandler(statement, "TUserExt");
+        statement.addBatch();
     }
 
-    public PrepareStatementHandler insertTUserSurvey(PreparedStatement statement, TUserSurvey tUserSurvey) throws SQLException {
+    public void insertTUserSurvey(PreparedStatement statement, TUserSurvey tUserSurvey) throws SQLException {
         statement.setObject(1, tUserSurvey.getUserId());
-        insertExcelLatch.countDown();
-        return new PrepareStatementHandler(statement, "TUserSurvey");
+        statement.addBatch();
     }
 
-    public CountDownLatch getInsertExcelLatch() {
-        return insertExcelLatch;
-    }
 
     public String getTUserSql() {
         return config.getProperty("db.sql.insertTUser");
